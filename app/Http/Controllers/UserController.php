@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Services\UserService;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    public function __construct(protected UserService $userService) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -17,9 +21,12 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        //
+        $validatedRequest = $request->validated();
+        $user = $this->userService->create($validatedRequest);
+
+        return response()->json($user, 201);
     }
 
     /**
