@@ -21,9 +21,10 @@ class StoreUserRequest extends FormRequest
      */
     public function rules(): array
     {
+        // Regras para validar os dados que serão salvos
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:user_registries,email',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
         ];
     }
