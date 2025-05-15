@@ -5,7 +5,7 @@
 
 2. ``AuthController`` define a lógica que deve acontecer quando aquela rota for acessada.
 
-3. ``route('login')`` no Blade resolve para a URL da rota nomeada (neste caso, /login).
+3. ``route('login')`` no Blade resolve para a URL da rota nomeada (neste caso, ``/login``).
 ___
 
 ### 🧪 Exemplo de fluxo completo com Blade
