@@ -17,3 +17,41 @@ ___
 4. Rota mapeia para o método register() do AuthController
 
 5. Dados são processados, e caso haja sucesso ou erro, são exibidos no próprio layout com session('success') ou $errors
+___
+
+### 🔐 Como funciona a autenticação no Laravel
+O Laravel oferece um sistema de autenticação completo e seguro, pronto para uso, que pode ser usado tanto com sessões quanto com tokens (para APIs).
+
+✅ Nessa aplicação (aplicação com Blade e sessões)
+Está sendo usado o sistema de autenticação baseado em sessão, que funciona assim:
+
+### ⚙️ Fluxo da autenticação baseada em sessão
+1. **Formulário de login**
+- O usuário insere e envia email e senha
+- O formulário envia os dados via POST para a rota login
+
+2. **Controller chama o serviço**
+- O AuthController chama LoginUserService, que usa:
+```php
+Auth::attempt($credentials);
+```
+- Isso valida se o email existe e se a senha bate com a hash do banco de dados.
+
+3. **Sessão iniciada**
+- Se as credenciais forem válidas, o Laravel autentica o usuário e armazena seu ID na sessão, com um cookie no navegador.
+
+4. **Middleware** ``auth``
+- Quando o usuário tenta acessar páginas protegidas (``/page1``, ``/page2`` etc.), o middleware auth verifica se há um usuário autenticado.
+- Se sim, carrega a página. Se não, redireciona para a tela de login.
+
+5. **Logout**
+- Quando o usuário clica em "Sair", o método ``logout()`` limpa a sessão e redireciona para o login.
+
+### 🔍 Funções principais usadas
+- ``Auth::attempt($credentials)`` – Tenta autenticar o usuário.
+
+- ``Auth::check()`` – Verifica se alguém está logado.
+
+- ``Auth::user()`` – Retorna o usuário autenticado.
+
+- ``Auth::logout()`` – Desloga o usuário e invalida a sessão.
