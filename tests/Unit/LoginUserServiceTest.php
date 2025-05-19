@@ -3,38 +3,48 @@
 namespace Tests\Unit;
 
 use App\Http\Services\LoginUserService;
-use Illuminate\Support\Facades\Auth;
-use PHPUnit\Framework\TestCase;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class LoginUserServiceTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function testItAuthenticatesUserWithValidCredentials(): void
     {
-        Auth::shouldReceive('attempt')
-            ->once()
-            ->with(['email' => 'user@example.com', 'password' => 'secret'])
-            ->andReturn(true);
+        User::create([
+            'name' => 'User Test',
+            'email' => 'user@example.com',
+            'password' => Hash::make('secret'),
+        ]);
 
         $service = new LoginUserService();
 
-        $this->assertTrue($service->execute([
+        $result = $service->execute([
             'email' => 'user@example.com',
-            'password' => 'secret'
-        ]));
+            'password' => 'secret',
+        ]);
+
+        $this->assertTrue($result);
     }
 
-    public function testItFailsWithInvalidCredentials()
+    public function testItFailsWithInvalidCredentials(): void
     {
-        Auth::shouldReceive('attempt')
-            ->once()
-            ->with(['email' => 'user@example.com', 'password' => 'wrong'])
-            ->andReturn(false);
+        User::create([
+            'name' => 'User Test',
+            'email' => 'user@example.com',
+            'password' => Hash::make('secret'),
+        ]);
 
         $service = new LoginUserService();
 
-        $this->assertFalse($service->execute([
+        $result = $service->execute([
             'email' => 'user@example.com',
-            'password' => 'wrong'
-        ]));
+            'password' => 'wrongpassword',
+        ]);
+
+        $this->assertFalse($result);
     }
 }
