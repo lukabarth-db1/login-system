@@ -17,8 +17,8 @@ class RegisterUserService
             'password' => Hash::make($data['password']),
         ]);
 
-        // Loga automaticamente após o cadastro
-        Auth::login($user);
+        // Armazena user_id na sessão para manter o usuário autenticado
+        session(['user_id' => $user->id]);
 
         return $user;
     }

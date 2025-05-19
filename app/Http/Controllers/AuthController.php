@@ -45,8 +45,11 @@ class AuthController extends Controller
     {
         // Problema que resolve: Faz login seguro e limpo, separado por responsabilidade (request + service)
 
-        // Valida os dados do formulário de login
-        $authenticated = $service->execute($request->only('email', 'password'));
+        // Extrai os dados validados do formulário de login
+        $credentials = $request->only('email', 'password');
+
+        // Tenta autenticar o usuário usando o serviço de login
+        $authenticated = $service->execute($credentials);
 
         if ($authenticated) {
             // Regera sessão para evitar ataques de sessão fixa
