@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Middleware\BasicAuthMiddleware;
 
 // Este arquivo define as rotas web da aplicação Laravel, separando as rotas públicas (login e registro) das rotas protegidas (páginas privadas acessíveis somente por usuários autenticados)
 
@@ -14,7 +15,7 @@ Route::post('/login', [AuthController::class, 'login']); // processa os dados do
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout'); // faz logout do usuário e finaliza a sessão
 
 // Agrupa as rotas protegidas pelo middleware 'auth'
-Route::middleware('auth')->group(function () {
+Route::middleware([BasicAuthMiddleware::class])->group(function () {
     Route::view('/page1', 'profile.page1')->name('page1');
     Route::view('/page2', 'profile.page2')->name('page2');
     Route::view('/page3', 'profile.page3')->name('page3');
