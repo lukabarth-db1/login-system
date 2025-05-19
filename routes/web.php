@@ -14,7 +14,7 @@ Route::post('/login', [AuthController::class, 'login']); // processa os dados do
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout'); // faz logout do usuário e finaliza a sessão
 
-// Agrupa as rotas protegidas pelo middleware 'auth'
+// Agrupa as rotas protegidas pelo middleware 'BasicAuthMiddleware'
 Route::middleware([BasicAuthMiddleware::class])->group(function () {
     Route::view('/page1', 'profile.page1')->name('page1');
     Route::view('/page2', 'profile.page2')->name('page2');
