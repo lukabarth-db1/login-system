@@ -71,6 +71,6 @@ class AuthController extends Controller
         $service->execute($request);
 
         // Flash message de sucesso no logout
-        return redirect('/login')->with('success', 'Você saiu com sucesso.');
+        return redirect()->route('login')->with('success', 'Você saiu com sucesso.');
     }
 }
