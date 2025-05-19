@@ -11,9 +11,10 @@ class LoginUserService
     {
         $user = User::where('email', $credentials['email'])->first();
 
-        if ($user && Hash::check($credentials['password'], $user->password)) {
-            session(['user_id' => $user->id]);
+        $passwordValid = $user && Hash::check($credentials['password'], $user->password);
 
+        if ($passwordValid) {
+            session(['user_id' => $user->id]);
             return true;
         }
 
