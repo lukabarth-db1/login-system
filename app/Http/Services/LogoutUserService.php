@@ -3,14 +3,18 @@
 namespace App\Http\Services;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class LogoutUserService
 {
     public function execute(Request $request): void
     {
-        Auth::logout(); // Remove o usuário da sessão
-        $request->session()->invalidate(); // Invalida todos os dados da sessão
-        $request->session()->regenerateToken(); // Gera novo token CSRF
+        // Remove o ID do usuário da sessão
+        $request->session()->forget('user_id');
+
+        // Invalida a sessão atual
+        $request->session()->invalidate();
+
+        // Regenera o token CSRF para evitar ataques
+        $request->session()->regenerateToken();
     }
 }
