@@ -15,13 +15,13 @@
             <a href="{{ route('page2') }}">Página 2</a>
             <a href="{{ route('page3') }}">Página 3</a>
 
-            @auth
-            <span>Bem-vindo, {{ Auth::user()->name }}!</span>
+            @if (user())
+            <span>Bem-vindo, {{ user()->name }}!</span>
+            @endif
             <form action="{{ route('logout') }}" method="POST" style="display:inline;">
                 @csrf
                 <button type="submit">Sair</button>
             </form>
-            @endauth
         </nav>
     </header>
 
