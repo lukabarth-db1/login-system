@@ -2,19 +2,21 @@
 
 namespace App\Http\Services;
 
-use Illuminate\Http\Request;
-
 class LogoutUserService
 {
-    public function execute(Request $request): void
+    public function execute(): void
     {
-        // Remove o ID do usuário da sessão
-        $request->session()->forget('user_id');
+        session_start();
 
-        // Invalida a sessão atual
-        $request->session()->invalidate();
+        // Remove o ID e token da sessão do usuário
+        unset($_SESSION['user_id']);
+        unset($_SESSION['token']);
 
-        // Regenera o token CSRF para evitar ataques
-        $request->session()->regenerateToken();
+        // Remove o arquivo de sessão
+        session_destroy();
+
+        // Regenera a sessão para segurança
+        session_start();
+        session_regenerate_id(true);
     }
 }

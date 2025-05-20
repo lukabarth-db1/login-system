@@ -3,7 +3,6 @@
 namespace App\Http\Services;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterUserService
@@ -17,9 +16,25 @@ class RegisterUserService
             'password' => Hash::make($data['password']),
         ]);
 
-        // Armazena user_id na sessão para manter o usuário autenticado
-        session(['user_id' => $user->id]);
+        // Gera token
+        $token = $this->encodedTokenGenerate($user->id);
 
+        // Salva o token no banco
+        $user->remember_token = $token;
+        $user->save();
+
+        // Armazena user_id e token na sessão para manter o usuário autenticado
+        session_start();
+        $_SESSION['user_id'] = $user->id;
+        $_SESSION['token'] = $user->remember_token;
         return $user;
+    }
+
+    private function encodedTokenGenerate(string $userId): string
+    {
+        $hash = 'token:' . $userId;
+        $token = base64_encode($hash);
+
+        return $token;
     }
 }
