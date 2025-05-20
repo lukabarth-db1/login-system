@@ -16,17 +16,18 @@ class LogoutUserServiceTest extends TestCase
 
     public function testItLogsOutUserAndInvalidatesSession(): void
     {
-        $session = Mockery::mock();
-        $session->shouldReceive('forget')->with('user_id')->once();
-        $session->shouldReceive('invalidate')->once();
-        $session->shouldReceive('regenerateToken')->once();
+        session_start();
 
-        $request = Mockery::mock(Request::class);
-        $request->shouldReceive('session')->andReturn($session);
+        $_SESSION['user_id'] = 1;
+        $_SESSION['token'] = base64_encode('1');
+
+        $this->assertArrayHasKey('user_id', $_SESSION);
+        $this->assertArrayHasKey('token', $_SESSION);
 
         $service = new LogoutUserService();
-        $service->execute($request);
+        $service->execute();
 
-        $this->assertTrue(true);
+        $this->assertArrayNotHasKey('user_id', $_SESSION);
+        $this->assertArrayNotHasKey('token', $_SESSION);
     }
 }

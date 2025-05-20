@@ -27,7 +27,9 @@ class LoginUserServiceTest extends TestCase
             'password' => 'secret',
         ]);
 
-        $this->assertTrue($result);
+        $this->assertIsString($result);
+        $this->assertNotEmpty($result);
+        $this->assertTrue(base64_decode($result, true) !== false);
     }
 
     public function testItFailsWithInvalidCredentials(): void
@@ -45,6 +47,6 @@ class LoginUserServiceTest extends TestCase
             'password' => 'wrongpassword',
         ]);
 
-        $this->assertFalse($result);
+        $this->assertNull($result);
     }
 }
