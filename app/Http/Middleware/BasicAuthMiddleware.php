@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Response;
 
 class BasicAuthMiddleware
@@ -29,6 +29,21 @@ class BasicAuthMiddleware
             header('HTTP/1.0 401 Unauthorized');
             echo 'Access denied.';
             exit;
+        }
+
+        session_start();
+        $notUser = !isset($_SESSION['user_id']);
+        $notToken = !isset($_SESSION['token']);
+
+        if ($notUser || $notToken) {
+            return redirect()->route('login');
+        }
+
+        $user = User::find($_SESSION['user_id']);
+        $validToken = $user->remember_token !== $_SESSION['token'];
+
+        if (!$user || $validToken) {
+            return redirect()->route('login');
         }
 
         return $next($request);
