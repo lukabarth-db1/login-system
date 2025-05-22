@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use App\Http\Services\LogoutUserService;
-use Illuminate\Http\Request;
+use App\Http\Services\TokenService;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
@@ -24,7 +24,9 @@ class LogoutUserServiceTest extends TestCase
         $this->assertArrayHasKey('user_id', $_SESSION);
         $this->assertArrayHasKey('token', $_SESSION);
 
-        $service = new LogoutUserService();
+        $tokenService = $this->createMock(TokenService::class);
+
+        $service = new LogoutUserService($tokenService);
         $service->execute();
 
         $this->assertArrayNotHasKey('user_id', $_SESSION);

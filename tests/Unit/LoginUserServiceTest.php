@@ -3,9 +3,11 @@
 namespace Tests\Unit;
 
 use App\Http\Services\LoginUserService;
+use App\Http\Services\TokenService;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery;
 use Tests\TestCase;
 
 class LoginUserServiceTest extends TestCase
@@ -20,7 +22,13 @@ class LoginUserServiceTest extends TestCase
             'password' => Hash::make('secret'),
         ]);
 
-        $service = new LoginUserService();
+        $tokenService = $this->createMock(TokenService::class);
+
+        $tokenService->method('encodedTokenGenerate')
+            ->with('1')
+            ->willReturn('fake_token');
+
+        $service = new LoginUserService($tokenService);
 
         $result = $service->execute([
             'email' => 'user@example.com',
@@ -29,7 +37,7 @@ class LoginUserServiceTest extends TestCase
 
         $this->assertIsString($result);
         $this->assertNotEmpty($result);
-        $this->assertTrue(base64_decode($result, true) !== false);
+        $this->assertEquals('fake_token', $result);
     }
 
     public function testItFailsWithInvalidCredentials(): void
@@ -40,7 +48,9 @@ class LoginUserServiceTest extends TestCase
             'password' => Hash::make('secret'),
         ]);
 
-        $service = new LoginUserService();
+        $tokenService = $this->createMock(TokenService::class);
+
+        $service = new LoginUserService($tokenService);
 
         $result = $service->execute([
             'email' => 'user@example.com',
