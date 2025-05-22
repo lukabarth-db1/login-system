@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Services\TokenService;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
@@ -32,15 +33,18 @@ class BasicAuthMiddleware
         }
 
         session_start();
-        $notUser = !isset($_SESSION['user_id']);
-        $notToken = !isset($_SESSION['token']);
+        $token = new TokenService();
+        $session = $token->getSessionData();
+
+        $notUser = !isset($session['user_id']);
+        $notToken = !isset($session['token']);
 
         if ($notUser || $notToken) {
             return redirect()->route('login');
         }
 
-        $user = User::find($_SESSION['user_id']);
-        $validToken = $user->remember_token !== $_SESSION['token'];
+        $user = User::find($session['user_id']);
+        $validToken = $user->remember_token !== $session['token'];
 
         if (!$user || $validToken) {
             return redirect()->route('login');
