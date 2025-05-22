@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Hash;
 
 class LoginUserService
 {
+    public function __construct(private TokenService $token) {}
+
     public function execute(array $credentials): ?string
     {
         $user = User::where('email', $credentials['email'])->first();
@@ -14,34 +16,28 @@ class LoginUserService
         $passwordValid = $user && Hash::check($credentials['password'], $user->password);
 
         if ($passwordValid) {
+            session_start();
             // Gera o token e salva no banco
-            $token = $this->encodedTokenGenerate($user->id);
+            $token = $this->token->encodedTokenGenerate($user->id);
+
             $user->remember_token = $token;
             $user->save();
 
-            // Salva os dados na sessão
-            session_start();
-            $_SESSION['user_id'] = $user->id;
-            $_SESSION['token'] = $token;
+            // Gera identificador da sessão
+            $sessionId = bin2hex(random_bytes(16));
+
+            // Cria cookie com ID da sessão
+            setcookie('custom_session_id', $sessionId, time() + 3600, '/');
+
+            // Cria e salva os dados da sessão no arquivo
+            $this->token->saveSession($sessionId, [
+                'user_id' => $user->id,
+                'token' => $token,
+            ]);
 
             return $token;
         }
 
         return null;
-    }
-
-    private function encodedTokenGenerate(string $userId): string
-    {
-        $hash = 'token:' . $userId;
-        $token = base64_encode($hash);
-
-        return $token;
-    }
-
-    public function validateToken(string $tokenFromRequest): bool
-    {
-        $user = User::where('remember_token', $tokenFromRequest)->first();
-
-        return $user;
     }
 }
