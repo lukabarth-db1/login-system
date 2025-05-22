@@ -19,4 +19,9 @@
         <button class="button-submit" type="submit">Entrar</button>
     </form>
 </div>
-@endsection
+
+<div class="footer">
+    <p>
+        Não tem uma conta? <a href="{{ route('register') }}">Faça seu cadastro</a>
+    </p>
+    @endsection
