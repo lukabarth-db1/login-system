@@ -23,11 +23,11 @@ class LoginUserService
             $user->remember_token = $token;
             $user->save();
 
-            // Gera identificador da sessão
+            // Gera identificador da sessão 
             $sessionId = bin2hex(random_bytes(16));
 
             // Cria cookie com ID da sessão
-            setcookie('custom_session_id', $sessionId, time() + 3600, '/');
+            setcookie('custom_session_id', $sessionId, time() + 300, '/');
 
             // Cria e salva os dados da sessão no arquivo
             $this->token->saveSession($sessionId, [
