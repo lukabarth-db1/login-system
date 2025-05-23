@@ -19,17 +19,25 @@ class RegisterUserService
         ]);
 
         // Gera token
-        $generateToken = $this->token->encodedTokenGenerate($user->id);
+        $token = $this->token->encodedTokenGenerate($user->id);
 
         // Salva o token no banco
-        $user->remember_token = $generateToken;
+        $user->remember_token = $token;
         $user->save();
 
-        $session = $this->token->getSessionData();
-        // Armazena user_id e token na sessão para manter o usuário autenticado
         session_start();
-        $session['user_id'] = $user->id;
-        $session['token'] = $user->remember_token;
+        // Gera identificador de sessão
+        $sessionId = bin2hex(random_bytes(16));
+
+        // Cria cookie com o ID da sessão
+        setcookie('custom_session_id', $sessionId, time() + 300, '/');
+
+        // Salva dados da sessão
+        $this->token->saveSession($sessionId, [
+            'user_id' => $user->id,
+            'token' => $token,
+        ]);
+
         return $user;
     }
 }

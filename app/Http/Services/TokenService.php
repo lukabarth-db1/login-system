@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Models\User;
+use Firebase\JWT\JWT;
 
 class TokenService
 {
@@ -10,8 +11,7 @@ class TokenService
 
     public function encodedTokenGenerate(string $userId): string
     {
-        $hash = 'token:' . $userId;
-        $token = base64_encode($hash);
+        $token = JWT::encode(['user' => $userId], 'my_secret_key', 'HS256');
 
         return $token;
     }
